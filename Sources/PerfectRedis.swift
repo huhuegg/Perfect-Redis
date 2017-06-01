@@ -1054,6 +1054,29 @@ public extension RedisClient {
 
 /// Hash related operations. Write me! !FIX!
 public extension RedisClient {
+    /// Returns the keys matching pattern.
+    func hkeys(pattern: String, callback: @escaping redisResponseCallback) {
+        self.sendCommand(name: "HKEYS \(pattern)", callback: callback)
+    }
     
+    /// Get the key value.
+    func hget(key: String, dictKey: String, callback: @escaping redisResponseCallback) {
+        self.sendCommand(name: "HGET \(key) \(dictKey)", callback: callback)
+    }
+    
+    /// Set the key to the String value with an optional expiration.
+    func hset(key: String, dictKey: String, value: RedisValue, expires: Double = 0.0, ifNotExists: Bool = false, ifExists: Bool = false, callback: @escaping redisResponseCallback) {
+        var options = ""
+        if expires != 0.0 {
+            options += " PX \(Int(expires * 1000))"
+        }
+        if ifNotExists {
+            options += " NX"
+        } else if ifExists {
+            options += " XX"
+        }
+        self.sendCommand(name: "HSET \(key) \(dictKey)) \(value.toString())\(options)", callback: callback)
+    }
+
 }
 
